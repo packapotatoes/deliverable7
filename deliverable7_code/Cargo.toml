@@ -1,0 +1,7 @@
+[package]
+name = "deliverable7_code"
+version = "0.1.0"
+authors = ["Dan Kaufman <djk86@pitt.edu>"]
+
+[dependencies]
+rand="0.3.0"
