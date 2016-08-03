@@ -3,12 +3,12 @@ extern crate rand;
 use std::io;
 use rand::Rng;
 
-static mut _wins: i32 = 0;
-static mut _losses: i32 = 0;
-static mut _ties: i32 = 0;
-static mut _rocks: i32 = 0;
-static mut _papers: i32 = 0;
-static mut _scissors: i32 = 0;
+static mut _wins: f32 = 0.0;
+static mut _losses: f32 = 0.0;
+static mut _ties: f32 = 0.0;
+static mut _rocks: f32 = 0.0;
+static mut _papers: f32 = 0.0;
+static mut _scissors: f32 = 0.0;
 
 enum input {
 	Rock,
@@ -89,8 +89,8 @@ fn main() {
 			outcome::Win => {print_round(&current_round); println!("You win!")},
 			outcome::Loss => {print_round(&current_round); println!("You lose!")},
 			outcome::Tie => {print_round(&current_round); println!("It's a tie!")},
-			outcome::Error => {println!("Please enter r, p, s, or q!!!!!"),
-			outcome::Quit => display_stats(),
+			outcome::Error => {println!("Please enter r, p, s, or q!!!!!")},
+			outcome::Quit => {display_stats(); break},
 		}
 	}
 }
@@ -130,16 +130,16 @@ fn track_stats(this_round: &round) -> outcome{
 	let round_outcome = this_round.winner();
 	unsafe{
 		match round_outcome {
-			outcome::Win => _wins = _wins + 1,
-			outcome::Loss => _losses = _losses + 1,
-			outcome::Tie => _ties = _ties + 1,
+			outcome::Win => _wins = _wins + 1.0,
+			outcome::Loss => _losses = _losses + 1.0,
+			outcome::Tie => _ties = _ties + 1.0,
 			outcome::Quit => return round_outcome,
 			outcome::Error => return outcome::Error,
 		}
 		match this_round.player {
-			input::Rock => _rocks = _rocks + 1,
-			input::Scissors => _scissors = _scissors + 1,
-			input::Paper => _papers = _papers + 1,
+			input::Rock => _rocks = _rocks + 1.0,
+			input::Scissors => _scissors = _scissors + 1.0,
+			input::Paper => _papers = _papers + 1.0,
 			_ => return outcome::Error,
 		}
 	}
@@ -148,5 +148,34 @@ fn track_stats(this_round: &round) -> outcome{
 }
 
 fn display_stats(){
-
+	println!("Player Stats:");
+	unsafe{
+		let total_games: f32 = _wins + _losses + _ties;
+		let mut win_percentage: f32 = (_wins / total_games * 100.0).round() / 100.0;
+		
+		let mut loss_percentage: f32 = (_losses / total_games * 100.0).round() / 100.0;
+		
+		let mut tie_percentage: f32 = (_ties / total_games * 100.0).round() / 100.0;
+		
+		if win_percentage.is_finite() != true {
+			win_percentage = 0.0;
+		}
+		
+		if tie_percentage.is_finite() != true {
+			tie_percentage = 0.0;
+		}
+		
+		if loss_percentage.is_finite() != true {
+			loss_percentage = 0.0;
+		}
+	
+	
+		println!("Wins: {} ({}%)", _wins, win_percentage);
+		println!("Ties: {} ({}%)", _ties, tie_percentage);
+		println!("Losses: {} ({}%)", _losses, loss_percentage);
+		println!("Rocks: {}", _rocks);
+		println!("Papers: {}", _papers);
+		println!("Scissors: {}", _scissors);
+	
+	}
 }
