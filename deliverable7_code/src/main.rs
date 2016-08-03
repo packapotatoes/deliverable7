@@ -10,7 +10,7 @@ static mut _rocks: f32 = 0.0;
 static mut _papers: f32 = 0.0;
 static mut _scissors: f32 = 0.0;
 
-enum input {
+enum Input {
 	Rock,
 	Paper,
 	Scissors,
@@ -18,7 +18,7 @@ enum input {
 	Error,
 }
 
-enum outcome {
+enum Outcome {
 	Win,
 	Loss,
 	Tie,
@@ -26,40 +26,40 @@ enum outcome {
 	Quit,
 }
 
-struct round {
-	player: input,
-	cpu: input,
+struct Round {
+	player: Input,
+	cpu: Input,
 }
 
-impl round {
+impl Round {
 
-	fn winner(&self) -> outcome{
+	fn winner(&self) -> Outcome{
 		match self.player {
-			input::Rock => match self.cpu {
-				input::Rock => outcome::Tie,
-				input::Scissors => outcome::Win,
-				input::Paper => outcome::Loss,
-				_ => outcome::Error,
+			Input::Rock => match self.cpu {
+				Input::Rock => Outcome::Tie,
+				Input::Scissors => Outcome::Win,
+				Input::Paper => Outcome::Loss,
+				_ => Outcome::Error,
 			},
-			input::Paper => match self.cpu {
-				input::Rock => outcome::Win,
-				input::Scissors => outcome::Loss,
-				input::Paper => outcome::Tie,
-				_ => outcome::Error,
+			Input::Paper => match self.cpu {
+				Input::Rock => Outcome::Win,
+				Input::Scissors => Outcome::Loss,
+				Input::Paper => Outcome::Tie,
+				_ => Outcome::Error,
 			},
-			input::Scissors => match self.cpu {
-				input::Rock => outcome::Loss,
-				input::Scissors => outcome::Tie,
-				input::Paper => outcome::Win,
-				_ => outcome::Error,
+			Input::Scissors => match self.cpu {
+				Input::Rock => Outcome::Loss,
+				Input::Scissors => Outcome::Tie,
+				Input::Paper => Outcome::Win,
+				_ => Outcome::Error,
 			},
-			input::Quit => outcome::Quit,
-			input::Error => outcome::Error,
+			Input::Quit => Outcome::Quit,
+			Input::Error => Outcome::Error,
 		}	
 	}
 }
 
-fn print_round( this_round: &round) {
+fn print_round( this_round: &Round) {
 	print!("Player chose: ");
 	let player_move = move_to_text(&this_round.player).to_string();
 	println!("{}", player_move);
@@ -69,33 +69,31 @@ fn print_round( this_round: &round) {
 	
 }
 
-fn move_to_text( mv: &input ) -> &str{
+fn move_to_text( mv: &Input ) -> &str{
 	match mv {
-		&input::Rock => "Rock",
-		&input::Paper => "Paper",
-		&input::Scissors => "Scissors",
+		&Input::Rock => "Rock",
+		&Input::Paper => "Paper",
+		&Input::Scissors => "Scissors",
 		_ => "",
 	}
 }
 
 
 fn main() {
-	println!("Hello, world!");
-	
 	// main loop
 	loop {
-		let current_round = round{player: get_move(), cpu: generate_move()};
+		let current_round = Round{player: get_move(), cpu: generate_move()};
 		match track_stats(&current_round){
-			outcome::Win => {print_round(&current_round); println!("You win!")},
-			outcome::Loss => {print_round(&current_round); println!("You lose!")},
-			outcome::Tie => {print_round(&current_round); println!("It's a tie!")},
-			outcome::Error => {println!("Please enter r, p, s, or q!!!!!")},
-			outcome::Quit => {display_stats(); break},
+			Outcome::Win => {print_round(&current_round); println!("You win!")},
+			Outcome::Loss => {print_round(&current_round); println!("You lose!")},
+			Outcome::Tie => {print_round(&current_round); println!("It's a tie!")},
+			Outcome::Error => {println!("Please enter r, p, s, or q!!!!!")},
+			Outcome::Quit => {display_stats(); break},
 		}
 	}
 }
 
-fn get_move() -> input{
+fn get_move() -> Input{
 	println!("Enter choice (r,p,s) or q to quit >");
 	
 	let mut player_move = String::new();
@@ -105,42 +103,42 @@ fn get_move() -> input{
 		.expect("Failed to read line");
 		
 	match player_move.trim().as_ref() {
-		"r" => input::Rock,
-		"p" => input::Paper,
-		"s" => input::Scissors,
-		"q" => input::Quit,
-		_ => input::Error,
+		"r" => Input::Rock,
+		"p" => Input::Paper,
+		"s" => Input::Scissors,
+		"q" => Input::Quit,
+		_ => Input::Error,
 	}
 		
 	//println!("Player chose {}", player_move);
 
 }
 
-fn generate_move() -> input{
+fn generate_move() -> Input{
 	let rand_num = rand::thread_rng().gen_range(0,3);
 	match rand_num {
-		0 => input::Rock,
-		1 => input::Paper,
-		_ => input::Scissors,
+		0 => Input::Rock,
+		1 => Input::Paper,
+		_ => Input::Scissors,
 	}
 	
 }
 
-fn track_stats(this_round: &round) -> outcome{
+fn track_stats(this_round: &Round) -> Outcome{
 	let round_outcome = this_round.winner();
 	unsafe{
 		match round_outcome {
-			outcome::Win => _wins = _wins + 1.0,
-			outcome::Loss => _losses = _losses + 1.0,
-			outcome::Tie => _ties = _ties + 1.0,
-			outcome::Quit => return round_outcome,
-			outcome::Error => return outcome::Error,
+			Outcome::Win => _wins = _wins + 1.0,
+			Outcome::Loss => _losses = _losses + 1.0,
+			Outcome::Tie => _ties = _ties + 1.0,
+			Outcome::Quit => return round_outcome,
+			Outcome::Error => return Outcome::Error,
 		}
 		match this_round.player {
-			input::Rock => _rocks = _rocks + 1.0,
-			input::Scissors => _scissors = _scissors + 1.0,
-			input::Paper => _papers = _papers + 1.0,
-			_ => return outcome::Error,
+			Input::Rock => _rocks = _rocks + 1.0,
+			Input::Scissors => _scissors = _scissors + 1.0,
+			Input::Paper => _papers = _papers + 1.0,
+			_ => return Outcome::Error,
 		}
 	}
 	round_outcome
